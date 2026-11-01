@@ -6,7 +6,7 @@ create table if not exists public.profiles (
   id          uuid primary key references auth.users on delete cascade,
   username    text unique not null check (username ~ '^[a-z0-9_]{3,16}$'),
   nickname    text not null check (char_length(nickname) between 1 and 12),
-  avatar_url  text check (avatar_url is null or avatar_url ~ '^https://[a-z0-9-]+\.supabase\.co/storage/v1/object/public/avatars/'),
+  avatar_url  text check (avatar_url is null or avatar_url ~ '^(https://[a-z0-9-]+\.supabase\.co|/sb)/storage/v1/object/public/avatars/'),
   best_score  int  not null default 0,
   best_at     timestamptz,
   created_at  timestamptz not null default now()
@@ -218,3 +218,8 @@ begin
 end $$;
 revoke execute on function public.get_me() from public, anon;
 grant execute on function public.get_me() to authenticated;
+
+-- 8. 头像地址允许站内转发路径（/sb/...），国内访问不直连 supabase.co
+alter table public.profiles drop constraint if exists profiles_avatar_url_check;
+alter table public.profiles add constraint profiles_avatar_url_check
+  check (avatar_url is null or avatar_url ~ '^(https://[a-z0-9-]+\.supabase\.co|/sb)/storage/v1/object/public/avatars/');
