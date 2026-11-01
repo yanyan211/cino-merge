@@ -1,7 +1,7 @@
-// 合成小瑞瑞 · 在线功能配置
-// 在 Supabase 后台 Project Settings → API（新版：Data API / API Keys）复制下面两项填进来。
-// anon / publishable key 是公开的，可以放在网页里；service_role / secret key 千万不要填在这里。
+// Cino Merge · 合成小瑞瑞 · 在线功能配置
+// 这里放的是 Supabase 的项目地址和 publishable key（公开的，可以放在网页里）。
+// secret / service_role key 千万不要填在这里。
 window.XXR_CONFIG = {
-  url: "",      // 例如 "https://abcdefg.supabase.co"
-  anonKey: "",  // 例如 "eyJhbGciOi..." 或 "sb_publishable_..."
+  url: "https://bhpesigpenrxtnmvyflt.supabase.co",
+  anonKey: "sb_publishable_Brh40DDnGwOJFyS3zVNjZw_JkNKEMAF",
 };
