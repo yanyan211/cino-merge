@@ -152,3 +152,69 @@ create policy "上传自己的头像" on storage.objects for insert to authentic
 drop policy if exists "替换自己的头像" on storage.objects;
 create policy "替换自己的头像" on storage.objects for update to authenticated
   using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- 7. 提速用的读取函数：一次请求拿齐需要的数据
+-- 排行榜：榜单 + 总人数 + 我的分数和名次
+create or replace function public.get_board(p_kind text, p_limit int default 5)
+returns json language plpgsql stable security definer set search_path = public as $$
+declare
+  v_week  date := public.current_week();
+  v_lim   int  := least(greatest(coalesce(p_limit, 5), 1), 500);
+  v_rows  json;
+  v_total int;
+  v_score int;
+  v_rank  int;
+begin
+  select count(*) into v_total from public.profiles;
+  if p_kind = 'week' then
+    select coalesce(json_agg(r), '[]'::json) into v_rows from (
+      select w.user_id as id, p.nickname, p.avatar_url, w.score
+        from public.weekly_scores w join public.profiles p on p.id = w.user_id
+       where w.week_start = v_week
+       order by w.score desc, w.at asc
+       limit v_lim) r;
+    if auth.uid() is not null then
+      select score into v_score from public.weekly_scores where user_id = auth.uid() and week_start = v_week;
+      if v_score is not null then
+        select count(*) + 1 into v_rank from public.weekly_scores where week_start = v_week and score > v_score;
+      end if;
+    end if;
+  else
+    select coalesce(json_agg(r), '[]'::json) into v_rows from (
+      select id, nickname, avatar_url, best_score as score
+        from public.profiles
+       where best_score > 0
+       order by best_score desc, best_at asc
+       limit v_lim) r;
+    if auth.uid() is not null then
+      select best_score into v_score from public.profiles where id = auth.uid();
+      if coalesce(v_score, 0) > 0 then
+        select count(*) + 1 into v_rank from public.profiles where best_score > v_score;
+      end if;
+    end if;
+  end if;
+  return json_build_object('rows', v_rows, 'total', v_total, 'my_score', coalesce(v_score, 0), 'my_rank', v_rank);
+end $$;
+grant execute on function public.get_board(text, int) to anon, authenticated;
+
+-- 个人资料 + 总榜名次
+create or replace function public.get_me()
+returns json language plpgsql stable security definer set search_path = public as $$
+declare
+  v_best int;
+  v_rank int;
+  v      json;
+begin
+  if auth.uid() is null then return null; end if;
+  select best_score into v_best from public.profiles where id = auth.uid();
+  if v_best is null then return null; end if;
+  if v_best > 0 then
+    select count(*) + 1 into v_rank from public.profiles where best_score > v_best;
+  end if;
+  select json_build_object('id', id, 'username', username, 'nickname', nickname,
+                           'avatar_url', avatar_url, 'best_score', best_score, 'rank', v_rank)
+    into v from public.profiles where id = auth.uid();
+  return v;
+end $$;
+revoke execute on function public.get_me() from public, anon;
+grant execute on function public.get_me() to authenticated;
