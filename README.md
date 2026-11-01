@@ -6,11 +6,12 @@
 
 | 文件 | 作用 |
 | --- | --- |
-| `index.html` | 游戏本体，图片和音效都已经打包在里面 |
+| `index.html` | 游戏本体 |
+| `assets/` | 图片、音效、字体和程序库，文件名带指纹，可以长期缓存 |
+| `_headers` | Cloudflare Pages 的缓存规则 |
 | `config.js` | 填 Supabase 地址和 key 的地方，只需要改这个文件 |
 | `supabase/setup.sql` | 在 Supabase 里建表用的脚本，跑一次就行 |
 | `README.md` | 就是这份说明 |
-| `.nojekyll` | 给 GitHub Pages 用的空文件，保留即可 |
 
 `config.js` 没填的时候，游戏照样能玩，只是不显示登录按钮，排行榜会提示「还没连上服务器」。
 
