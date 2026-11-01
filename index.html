@@ -8,10 +8,10 @@
 <body>
 <title>合成小瑞瑞</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preload" href="assets/fun.5645f531.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fun.399dbfe0.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/num.2511ca20.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-@font-face { font-family: "ZCOOL KuaiLe"; src: url("assets/fun.5645f531.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "ZCOOL KuaiLe"; src: url("assets/fun.399dbfe0.woff2") format("woff2"); font-display: swap; }
 @font-face { font-family: "Lilita One"; src: url("assets/num.2511ca20.woff2") format("woff2"); font-display: swap; }
 </style>
 <style>
@@ -181,6 +181,8 @@ img.ava { object-fit: cover; padding: 0; }
 .live { display: flex; align-items: center; justify-content: center; gap: 1.6cqw; font: 3.4cqw/1 var(--font-fun); color: #5f8a6d; margin-top: -2cqw; }
 /* 状态小圆点：只画一个，用颜色区分连接中（灰）和实时更新中（绿） */
 .live::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #bbb; }
+.live .refresh { margin-left: 2cqw; border: .4cqw solid #9fd8a9; background: transparent; color: #3a9459; border-radius: 99px; padding: .6cqw 2.4cqw; font: 600 3.2cqw/1 var(--font-ui); cursor: pointer; }
+.live .refresh:disabled { opacity: .5; }
 .live.on::before { background: #2ecc71; box-shadow: 0 0 0 3px rgba(46, 204, 113, .22); }
 @keyframes blink { 50% { opacity: .3; } }
 .board { list-style: none; margin: 0; padding: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2cqw; min-height: 30cqw; }
@@ -354,7 +356,7 @@ img.ava { object-fit: cover; padding: 0; }
 <script defer src="assets/supabase.43b205e2.js"></script>
 <script defer src="config.js"></script>
 
-<script defer src="assets/game.8df14e17.js"></script>
+<script defer src="assets/game.9596d031.js"></script>
 
 </body>
 </html>
