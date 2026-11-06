@@ -7,3 +7,5 @@
   Cache-Control: public, max-age=0, must-revalidate
 /config.js
   Cache-Control: public, max-age=0, must-revalidate
+/avatars/*
+  Cache-Control: public, max-age=31536000, immutable

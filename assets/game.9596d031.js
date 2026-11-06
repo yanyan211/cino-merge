@@ -677,11 +677,20 @@ if (configured) {
 }
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function avaSrc(u) {
+  // 老头像原图已镜像到本站 /avatars/（同路径同文件名），优先从本站加载，避免再耗 Supabase 存储流量；版本号参数保留，换头像时能刷新缓存
+  if (!u || typeof u !== "string") return u;
+  const m = u.match(/\/storage\/v1\/object\/public\/avatars\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/avatar\.webp(\?.*)?$/i);
+  return m ? "/avatars/" + m[1] + "/avatar.webp" + (m[2] || "") : u;
+}
 function avaHTML(p, cls = "ava") {
   // 头像优先用存在数据库里的小图（跟着榜单一起返回，不用单独再发请求）
   const url = p && (cls.includes("lg") ? (p.avatar_mid || p.avatar_url || p.avatar_small) : (p.avatar_small || p.avatar_mid || p.avatar_url));
   const ch = esc(((p && p.nickname) || "?").trim().slice(0, 1));
-  return url ? `<img class="${cls}" src="${esc(url)}" alt="" loading="lazy" decoding="async">` : `<span class="${cls}">${ch}</span>`;
+  if (!url) return `<span class="${cls}">${ch}</span>`;
+  const src = avaSrc(url);
+  const fb = src !== url ? ` onerror="this.onerror=null;this.src='${esc(url)}'"` : "";
+  return `<img class="${cls}" src="${esc(src)}" alt="" loading="lazy" decoding="async"${fb}>`;
 }
 const toEmail = (u) => `${u.toLowerCase()}@${ONLINE.emailDomain}`;
 const isNetErr = (e) => /Load failed|Failed to fetch|NetworkError|Network request failed|fetch|abort/i.test((e && (e.message || e.name)) || "");
@@ -906,7 +915,9 @@ function renderMe() {
 // 以前上传的头像是单独的图片文件：登录时顺手转成小图存进数据库，之后排行榜就不用再单独加载它
 async function migrateAvatar() {
   try {
-    const blob = await (await fetch(me.avatar_url)).blob();
+    let resp = await fetch(avaSrc(me.avatar_url)).catch(() => null);
+    if (!resp || !resp.ok) resp = await fetch(me.avatar_url);
+    const blob = await resp.blob();
     const small = await squareAvatar(blob, 48, 0.72), mid = await squareAvatar(blob, 128, 0.78);
     const { error } = await sb.from("profiles").update({ avatar_small: small, avatar_mid: mid }).eq("id", myId);
     if (!error) { me.avatar_small = small; me.avatar_mid = mid; }
