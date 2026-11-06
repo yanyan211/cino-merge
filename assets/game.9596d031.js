@@ -13,7 +13,6 @@ const CONFIG = {
   finalLabel: "本局得分",
   againHint: "再来一局",
   bigWinText: "合成小瑞瑞！",
-  bannerText: "！！！打开由你榜投积分 拿个号一边挂播一边玩 救救日榜！！！",
   routeTitle: "合成路线",
   routeTap: "点击任意处开始游戏",
   pauseTitle: "暂停一下",
@@ -61,9 +60,6 @@ const scoreEl = $("score");
 
 /* ---------- 文案 ---------- */
 $("titleText").textContent = CONFIG.title;
-$("bannerText").textContent = CONFIG.bannerText;
-$("bannerText2").textContent = CONFIG.bannerText;
-$("bannerText3").textContent = CONFIG.bannerText;
 $("startHint").textContent = CONFIG.startHint;
 $("overText").textContent = CONFIG.gameOverText;
 $("finalLabel").textContent = CONFIG.finalLabel;
