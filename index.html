@@ -276,6 +276,24 @@ img.ava { object-fit: cover; padding: 0; }
 @keyframes breathe { 50% { opacity: .35; } }
 @media (prefers-reduced-motion: reduce) { .route .tap { animation: none; } }
 
+/* 主页横幅：跑马灯 */
+.banner {
+  position: absolute; left: 0; right: 0; top: 15cqw; z-index: 4;
+  overflow: hidden; white-space: nowrap;
+  background: #3a9459; color: #ffffff;
+  border-block: .6cqw solid #ffffff;
+  text-shadow: 0 .3cqw 0 rgba(0,0,0,.18);
+  font: 4.6cqw/1 var(--font-fun);
+  padding-block: 2cqw;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+/* 三段相同的文字首尾相接，向左移动一段的距离再回到起点，看起来就是无缝循环 */
+.banner .track { display: inline-flex; width: max-content; animation: marquee 28s linear infinite; will-change: transform; }
+.banner .track span { padding-right: 5cqw; }
+@keyframes marquee { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-33.3333%, 0, 0); } }
+@media (prefers-reduced-motion: reduce) { .banner .track { animation-duration: 40s; } }
+
 </style>
 
 <div class="stage">
@@ -286,6 +304,7 @@ img.ava { object-fit: cover; padding: 0; }
     <button class="mute" id="mute" type="button" aria-label="静音"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h3.5L12 5v14l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
 
     <div class="overlay" id="startPanel">
+      <div class="banner" aria-label="公告"><div class="track"><span id="bannerText"></span><span id="bannerText2" aria-hidden="true"></span><span id="bannerText3" aria-hidden="true"></span></div></div>
       <img class="big" id="startBig" alt="">
       <h1 id="titleText"></h1>
       <button class="play" id="startBtn" type="button" aria-label="开始游戏"><img id="startImg" alt=""></button>
@@ -338,7 +357,7 @@ img.ava { object-fit: cover; padding: 0; }
 <script defer src="assets/supabase.43b205e2.js"></script>
 <script defer src="config.js"></script>
 
-<script defer src="assets/game.9596d032.js"></script>
+<script defer src="assets/game.9596d033.js"></script>
 
 </body>
 </html>
